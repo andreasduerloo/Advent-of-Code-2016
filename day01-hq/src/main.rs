@@ -13,11 +13,7 @@ fn main() {
         let mut instruction_iter = instructions.iter();
 
         while let Some(next_instruction) = instruction_iter.next() {
-           new_position(&mut state, next_instruction.trim());
-           if !history.insert(state.0) { // We also 'visit' the locations on the way!
-            println!("Distance to actual HQ: {}", distance_to_origin(&state.0));
-            break
-           }
+           new_position(&mut state, next_instruction.trim(), &mut history);
         }
         println!("Distance from origin: {}", distance_to_origin(&state.0));
     }

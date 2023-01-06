@@ -11,10 +11,10 @@ pub enum Direction {
     West,
 }
 
-pub fn new_position(state: &mut (Position, Direction), instruction: &str) {
+pub fn new_position(state: &mut (Position, Direction), instruction: &str, history: &mut History) {
     if let Ok(new_direction) = turn(state.1, &instruction[0..1]) {
         state.1 = new_direction;
-        move_position(state, isize::from_str_radix(&instruction[1..instruction.len()], 10).unwrap());
+        move_position(state, isize::from_str_radix(&instruction[1..instruction.len()], 10).unwrap(), history);
     } else {
         eprintln!("Could not calculate new position");
     }
@@ -60,19 +60,39 @@ fn turn(direction: Direction, instruction: &str) -> Result<Direction, &str> {
     }
 }
 
-fn move_position(state: &mut (Position, Direction), distance: isize) {
+fn move_position(state: &mut (Position, Direction), distance: isize, history: &mut History) {
     match state.1 {
         Direction::North => {
-            state.0.1 += distance;
+            for _i in 0..distance {
+                state.0.1 += 1;
+                if !history.insert(state.0) {
+                    println!("We've been here before, distance = {}", distance_to_origin(&state.0));
+                }
+            }
         },
         Direction::East => {
-            state.0.0 += distance;
+            for _i in 0..distance {
+                state.0.0 += 1;
+                if !history.insert(state.0) {
+                    println!("We've been here before, distance = {}", distance_to_origin(&state.0));
+                }
+            }
         },
         Direction::South => {
-            state.0.1 -= distance;
+            for _i in 0..distance {
+                state.0.1 -= 1;
+                if !history.insert(state.0) {
+                    println!("We've been here before, distance = {}", distance_to_origin(&state.0));
+                }
+            }
         },
         Direction::West => {
-            state.0.0 -= distance;
+            for _i in 0..distance {
+                state.0.0 -= 1;
+                if !history.insert(state.0) {
+                    println!("We've been here before, distance = {}", distance_to_origin(&state.0));
+                }
+            }
         }
     }
 }
