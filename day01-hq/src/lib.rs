@@ -11,7 +11,7 @@ pub enum Direction {
     West,
 }
 
-pub fn new_position(state: &mut (Position, Direction), instruction: &str, history: &mut History) {
+pub fn new_position(state: &mut (Position, Direction, bool), instruction: &str, history: &mut History) {
     if let Ok(new_direction) = turn(state.1, &instruction[0..1]) {
         state.1 = new_direction;
         move_position(state, isize::from_str_radix(&instruction[1..instruction.len()], 10).unwrap(), history);
@@ -60,12 +60,13 @@ fn turn(direction: Direction, instruction: &str) -> Result<Direction, &str> {
     }
 }
 
-fn move_position(state: &mut (Position, Direction), distance: isize, history: &mut History) {
+fn move_position(state: &mut (Position, Direction, bool), distance: isize, history: &mut History) {
     match state.1 {
         Direction::North => {
             for _i in 0..distance {
                 state.0.1 += 1;
-                if !history.insert(state.0) {
+                if !history.insert(state.0) && !state.2 {
+                    state.2 = true;
                     println!("We've been here before, distance = {}", distance_to_origin(&state.0));
                 }
             }
@@ -73,7 +74,8 @@ fn move_position(state: &mut (Position, Direction), distance: isize, history: &m
         Direction::East => {
             for _i in 0..distance {
                 state.0.0 += 1;
-                if !history.insert(state.0) {
+                if !history.insert(state.0) && !state.2 {
+                    state.2 = true;
                     println!("We've been here before, distance = {}", distance_to_origin(&state.0));
                 }
             }
@@ -81,7 +83,8 @@ fn move_position(state: &mut (Position, Direction), distance: isize, history: &m
         Direction::South => {
             for _i in 0..distance {
                 state.0.1 -= 1;
-                if !history.insert(state.0) {
+                if !history.insert(state.0) && !state.2 {
+                    state.2 = true;
                     println!("We've been here before, distance = {}", distance_to_origin(&state.0));
                 }
             }
@@ -89,7 +92,8 @@ fn move_position(state: &mut (Position, Direction), distance: isize, history: &m
         Direction::West => {
             for _i in 0..distance {
                 state.0.0 -= 1;
-                if !history.insert(state.0) {
+                if !history.insert(state.0) && !state.2 {
+                    state.2 = true;
                     println!("We've been here before, distance = {}", distance_to_origin(&state.0));
                 }
             }
