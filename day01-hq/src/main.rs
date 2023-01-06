@@ -9,6 +9,6 @@ fn main() {
 
         content.split(", ").for_each(|s| new_position(&mut state, s.trim(), &mut history));
 
-        println!("Distance from origin: {}", distance_to_origin(&state.0));
+        println!("First star: distance from origin: {}", distance_to_origin(&state.0));
     }
 }

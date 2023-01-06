@@ -3,7 +3,7 @@ use std::collections::HashSet;
 pub type Position = (isize, isize);
 pub type History = HashSet<Position>;
 
-#[derive (Copy, Clone)]
+#[derive (Copy, Clone, PartialEq)]
 pub enum Direction {
     North,
     East,
@@ -21,44 +21,24 @@ pub fn new_position(state: &mut (Position, Direction, bool), instruction: &str, 
 }
 
 fn turn(direction: Direction, instruction: &str) -> Result<Direction, &str> {
+    let compass = [Direction::North, Direction::East, Direction::South, Direction::West];
+    let index = find_index(direction, &compass);
+
     match instruction {
-        "L" => {
-            match direction {
-                Direction::North => {
-                    return Ok(Direction::West);
-                },
-                Direction::East => {
-                    return Ok(Direction::North);
-                },
-                Direction::South => {
-                    return Ok(Direction::East);
-                },
-                Direction::West => {
-                    return Ok(Direction::South);
-                }
-            }
-        },
-        "R" => {
-            match direction {
-                Direction::North => {
-                    return Ok(Direction::East);
-                },
-                Direction::East => {
-                    return Ok(Direction::South);
-                },
-                Direction::South => {
-                    return Ok(Direction::West);
-                },
-                Direction::West => {
-                    return Ok(Direction::North);
-                }
-            }
-        },
-        _ => {
-            return Err("Something was passed that is not an L or an R.");
-        }
+        "L" => { return Ok(compass[(index + 3) % 4]); },
+        "R" => { return Ok(compass[(index + 1) % 4]); },
+        _ => { return Err("Something was passed that is not an L or an R."); }
     }
 }
+
+fn find_index(direction: Direction, compass: &[Direction]) -> usize {
+    for i in 0..compass.len() {
+        if compass[i] == direction {
+            return i;
+        }
+    }
+    0
+} 
 
 fn move_position(state: &mut (Position, Direction, bool), distance: isize, history: &mut History) {
     match state.1 {
@@ -67,7 +47,7 @@ fn move_position(state: &mut (Position, Direction, bool), distance: isize, histo
                 state.0.1 += 1;
                 if !history.insert(state.0) && !state.2 {
                     state.2 = true;
-                    println!("We've been here before, distance = {}", distance_to_origin(&state.0));
+                    println!("Second star: we've been here before, distance: {}", distance_to_origin(&state.0));
                 }
             }
         },
@@ -76,7 +56,7 @@ fn move_position(state: &mut (Position, Direction, bool), distance: isize, histo
                 state.0.0 += 1;
                 if !history.insert(state.0) && !state.2 {
                     state.2 = true;
-                    println!("We've been here before, distance = {}", distance_to_origin(&state.0));
+                    println!("Second star: we've been here before, distance: {}", distance_to_origin(&state.0));
                 }
             }
         },
@@ -85,7 +65,7 @@ fn move_position(state: &mut (Position, Direction, bool), distance: isize, histo
                 state.0.1 -= 1;
                 if !history.insert(state.0) && !state.2 {
                     state.2 = true;
-                    println!("We've been here before, distance = {}", distance_to_origin(&state.0));
+                    println!("Second star: we've been here before, distance: {}", distance_to_origin(&state.0));
                 }
             }
         },
@@ -94,7 +74,7 @@ fn move_position(state: &mut (Position, Direction, bool), distance: isize, histo
                 state.0.0 -= 1;
                 if !history.insert(state.0) && !state.2 {
                     state.2 = true;
-                    println!("We've been here before, distance = {}", distance_to_origin(&state.0));
+                    println!("Second star: we've been here before, distance: {}", distance_to_origin(&state.0));
                 }
             }
         }
